@@ -1,27 +1,26 @@
 FROM ubuntu
-MAINTAINER Matt Baldwin (baldwin@stackpointcloud.com)
+MAINTAINER Jamis Johnson (jamis@paperspace.io)
 
 RUN \
   apt-get update && apt-get -y --no-install-recommends install \
-    ca-certificates \
-    software-properties-common \
-    python-django-tagging \
-    python-simplejson \
-    python-memcache \
-    python-ldap \
-    python-cairo \
-    python-pysqlite2 \
-    python-support \
-    python-pip \
-    gunicorn \
-    supervisor \
-    nginx-light \
-    nodejs \
-    git \
-    curl \
-    openjdk-7-jre \
-    build-essential \
-    python-dev
+  ca-certificates \
+  software-properties-common \
+  python-django-tagging \
+  python-simplejson \
+  python-memcache \
+  python-ldap \
+  python-cairo \
+  python-pysqlite2 \
+  python-support \
+  python-pip \
+  gunicorn \
+  nginx-light \
+  nodejs \
+  git \
+  curl \
+  openjdk-7-jre \
+  build-essential \
+  python-dev
 
 
 WORKDIR /opt
@@ -36,11 +35,13 @@ RUN \
 
 ADD config.js /opt/grafana/config.js
 ADD nginx.conf /etc/nginx/nginx.conf
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ADD config.toml /opt/influxdb/current/config.toml
 
 VOLUME ["/opt/influxdb/shared/data"]
 
 EXPOSE 80 8083 8086 2003
 
-CMD ["supervisord", "-n"]
+CMD \
+  /etc/init.d/influxdb start && \
+  service nginx start && \
+  cd /opt/grafana/ && ./bin/grafana-server
