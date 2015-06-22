@@ -1,0 +1,7 @@
+* elastic beanstalk-ify server for deploys and builds
+* integrate statsd
+* add collectd to all service deploys
+    * apt-get install collectd
+    * reconfig collectd.conf Hostname, etc. figure out how to add environment name, e.g. dev, staging, prod
+    * Docker ADD /etc/collectd/collectd.conf to container
+* push PS_METRICS to paperspace github
