@@ -48,7 +48,7 @@ ADD nginx.conf /etc/nginx/nginx.conf
 # types.db required so influxdb can receive collectd data
 ADD types.db /opt/influxdb/collectd/
 
-VOLUME ["/opt/influxdb/shared/data"]
+VOLUME ["/var/opt/influxdb","/opt/grafana/data"]
 
 EXPOSE 80 8083 8086 25826
 
