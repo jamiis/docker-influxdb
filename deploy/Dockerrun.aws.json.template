@@ -1,0 +1,26 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Authentication": {
+    "Bucket": "ps-metrics",
+    "Key": "docker/dockercfg"
+  },
+  "Image": {
+    "Name": "paperspace/ps_metrics:<TAG>",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8083"
+    },
+    {
+      "ContainerPort": "80"
+    },
+    {
+      "ContainerPort": "8086"
+    },
+    {
+      "ContainerPort": "25826"
+    }
+  ],
+  "Logging": "/var/log/nginx"
+}

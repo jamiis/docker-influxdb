@@ -1,0 +1,32 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+  pre:
+    - pip install awscli
+    - mkdir -p ~/.aws; cp deploy/aws_config ~/.aws/config
+  override:
+    - if [[ -e ~/docker/last_image.tar ]]; then docker load -i ~/docker/last_image.tar; fi
+    - npm install
+  post:
+    - chmod +x deploy/reset_mtime.perl && ./deploy/reset_mtime.perl
+    - printf "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile /root/.ssh/id_circleci_github" >> ./deploy/sshconfig
+    - cp /home/ubuntu/.ssh/id_cir#cleci_github ./deploy/id_circleci_github
+    - cp /home/ubuntu/.gitconfig ./deploy/gitconfig
+    - chmod +x deploy/create_static_time.perl && ./deploy/create_static_time.perl ./deploy/sshconfig && ./deploy/create_static_time.perl ./deploy/id_circleci_github && ./deploy/create_static_time.perl ./deploy/gitconfig
+    - docker build -t paperspace/ps_metrics:$CIRCLE_SHA1 .
+    - mkdir -p ~/docker; docker save paperspace/ps_metrics:$CIRCLE_SHA1 > ~/docker/last_image.tar
+
+test:
+  override:
+    - chmod +x deploy/test.sh && ./deploy/test.sh
+
+deployment:
+  elasticbeanstalk:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - chmod +x deploy/deploy.sh && ./deploy/deploy.sh $CIRCLE_SHA1
